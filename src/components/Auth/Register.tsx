@@ -27,8 +27,10 @@ export default function RegisterPage() {
   }, [user, isPending, router]);
 
   const handleGoogleSignIn = () => {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:5000";
-    window.location.href = `${backendUrl}/api/auth/google`;
+    // Get the base URL without /api suffix
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    const baseUrl = apiUrl.replace(/\/api\/?$/, "");
+    window.location.href = `${baseUrl}/api/auth/google`;
   };
 
   const handleRegister = async (e: React.FormEvent) => {
