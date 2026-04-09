@@ -1,0 +1,225 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@theme inline {
+  --font-outfit: var(--font-outfit);
+
+  --color-brand-blue: #0642f0;
+  --color-brand-red: #c63634;
+  --color-brand-black: #111111;
+  --color-brand-gray: #333333;
+  --color-brand-light: #f9f9f9;
+  --color-brand-border: #eaeaea;
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark body {
+  background: #000000;
+  color: #ffffff;
+}
+
+html:not(.dark) body {
+  background: #ffffff;
+  color: #111111;
+}
+
+/* ── react-international-phone overrides ── */
+.phone-field-wrapper .react-international-phone-input-container {
+  display: flex !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.phone-field-wrapper .react-international-phone-country-selector-button {
+  background: transparent !important;
+  border: none !important;
+  border-right: 1px solid rgba(156,163,175,0.2) !important;
+  border-radius: 0 !important;
+  padding: 0 12px !important;
+  height: auto !important;
+}
+.dark .phone-field-wrapper .react-international-phone-country-selector-button {
+  border-right-color: rgba(255,255,255,0.1) !important;
+}
+.phone-field-wrapper .react-international-phone-country-selector-button:hover {
+  background: rgba(0,0,0,0.04) !important;
+}
+.dark .phone-field-wrapper .react-international-phone-country-selector-button:hover {
+  background: rgba(255,255,255,0.05) !important;
+}
+.phone-field-wrapper .react-international-phone-input {
+  flex: 1 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 14px 20px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: inherit !important;
+  outline: none !important;
+}
+.dark .phone-field-wrapper .react-international-phone-input {
+  color: #fff !important;
+}
+.phone-field-wrapper .react-international-phone-input::placeholder {
+  color: rgba(107,114,128,0.5) !important;
+}
+/* Dropdown */
+.phone-field-wrapper .react-international-phone-country-selector-dropdown {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12) !important;
+  z-index: 50 !important;
+}
+.dark .phone-field-wrapper .react-international-phone-country-selector-dropdown {
+  background: #27272a !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+.phone-field-wrapper .react-international-phone-country-selector-dropdown__list-item {
+  color: #111 !important;
+}
+.dark .phone-field-wrapper .react-international-phone-country-selector-dropdown__list-item {
+  color: #fff !important;
+}
+.phone-field-wrapper .react-international-phone-country-selector-dropdown__list-item:hover {
+  background: rgba(6,66,240,0.08) !important;
+}
+.dark .phone-field-wrapper .react-international-phone-country-selector-dropdown__list-item:hover {
+  background: rgba(255,255,255,0.05) !important;
+}
+.phone-field-wrapper .react-international-phone-country-selector-dropdown__list-item--selected {
+  background: rgba(6,66,240,0.1) !important;
+  color: #0642f0 !important;
+}
+.phone-input-wrapper {
+  @apply w-full;
+}
+.phone-input-wrapper .PhoneInput {
+  @apply flex items-center gap-2 w-full px-4 py-3.5 bg-brand-light dark:bg-zinc-800 border border-transparent dark:border-white/5 rounded-lg transition-all;
+}
+.phone-input-wrapper .PhoneInput:focus-within {
+  @apply bg-white dark:bg-zinc-900 border-brand-blue ring-2 ring-brand-blue/20;
+}
+.phone-input-wrapper .PhoneInputCountry {
+  @apply flex items-center gap-1 shrink-0;
+}
+.phone-input-wrapper .PhoneInputCountrySelect {
+  @apply bg-white dark:bg-zinc-800 text-brand-black dark:text-white font-medium text-sm outline-none cursor-pointer rounded;
+}
+.phone-input-wrapper .PhoneInputCountrySelect option {
+  @apply bg-white dark:bg-zinc-800 text-brand-black dark:text-white;
+}
+.phone-input-wrapper .PhoneInputInput {
+  @apply flex-1 bg-transparent text-brand-black dark:text-white font-medium text-sm outline-none placeholder:text-brand-gray/50 dark:placeholder:text-gray-500;
+}
+.phone-input-error .PhoneInput {
+  @apply border-red-400 ring-2 ring-red-400/20;
+}
+
+/* Phone input inside inputClass wrapper div */
+.PhoneInput {
+  @apply flex items-center gap-2 w-full px-4 py-0;
+}
+.PhoneInputCountry {
+  @apply flex items-center gap-1 shrink-0 pl-1;
+}
+.PhoneInputCountrySelect {
+  @apply bg-transparent text-brand-black dark:text-white font-medium text-sm outline-none cursor-pointer;
+}
+.PhoneInputCountrySelect option {
+  @apply bg-white dark:bg-zinc-800 text-brand-black dark:text-white;
+}
+.PhoneInputInput {
+  @apply flex-1 bg-transparent text-brand-black dark:text-white font-medium text-sm outline-none placeholder:text-brand-gray/50 dark:placeholder:text-gray-500 py-3.5 pr-2;
+}
+
+/* Force dark background on the native country select dropdown in dark mode */
+.dark .PhoneInputCountrySelect {
+  background-color: #27272a;
+  color: #fff;
+  color-scheme: dark;
+}
+.dark .PhoneInputCountrySelect option {
+  background-color: #27272a;
+  color: #fff;
+}
+.dark .phone-input-wrapper .PhoneInputCountrySelect {
+  background-color: #27272a;
+  color: #fff;
+  color-scheme: dark;
+}
+.dark .phone-input-wrapper .PhoneInputCountrySelect option {
+  background-color: #27272a;
+  color: #fff;
+}

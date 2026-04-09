@@ -1,0 +1,115 @@
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+
+const isBrowser = typeof window !== 'undefined';
+
+// Create axios instance with base configuration
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  timeout: 30000,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+
+// Request interceptor to add auth token
+axiosInstance.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    // Get token from localStorage or sessionStorage safely in SSR environment
+    const adminToken = isBrowser ? (localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken')) : null;
+    const vendorToken = isBrowser ? localStorage.getItem('vendorToken') : null;
+    const checkerToken = isBrowser ? localStorage.getItem('checkerToken') : null;
+    const userToken = isBrowser ? (localStorage.getItem('userToken') || sessionStorage.getItem('userToken')) : null;
+
+    const token = adminToken || vendorToken || checkerToken || userToken;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle common errors
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  (error) => {
+    // Handle common HTTP errors
+    if (error.response) {
+      // Server responded with error status
+      const { status, data } = error.response;
+
+      switch (status) {
+        case 401:
+          // Just reject — callers handle unauthenticated state themselves
+          break;
+        case 403:
+          // Forbidden
+          console.error('Access forbidden:', data?.error || 'Insufficient permissions');
+          break;
+        case 404:
+          // Not found
+          console.error('Resource not found:', data?.error || 'The requested resource was not found');
+          break;
+        case 500:
+          // Server error
+          console.error('Server error:', data?.error || 'Internal server error');
+          break;
+        default:
+          console.error('API Error:', data?.error || `HTTP ${status}`);
+      }
+
+      // Return a more user-friendly error without creating a new Error object
+      const errorMessage = data?.error || data?.message || `HTTP ${status}`;
+      return Promise.reject({ message: errorMessage, status, data });
+    } else if (error.request) {
+      // Network error
+      console.error('Network error:', error.message);
+      return Promise.reject({ message: 'Network error. Please check your connection.', status: 0, data: null });
+    } else {
+      // Other error
+      console.error('Request error:', error.message);
+      return Promise.reject({ message: error.message || 'Request failed', status: 0, data: null });
+    }
+  }
+);
+
+export default axiosInstance;
+
+// Create axios instance with vendor token
+export const createVendorAxiosInstance = () => {
+  const vendorToken = typeof window !== 'undefined' ? localStorage.getItem('vendorToken') : null;
+
+  return axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+    timeout: 10000,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(vendorToken && { Authorization: `Bearer ${vendorToken}` })
+    },
+  });
+};
+
+// Create axios instance with admin token
+export const createAdminAxiosInstance = () => {
+  const adminToken = isBrowser ? (localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken')) : null;
+
+  return axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+    timeout: 10000,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(adminToken && { Authorization: `Bearer ${adminToken}` })
+    },
+  });
+};
+
+// Export types for convenience
+export type { AxiosResponse, InternalAxiosRequestConfig };

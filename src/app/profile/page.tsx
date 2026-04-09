@@ -1,0 +1,497 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import Navbar from "@/components/Website/Header/Header";
+import MarketTicker from "@/components/MarketTicker";
+import Footer from "@/components/Website/Footer/Footer";
+import { useAuth, signOut } from "@/hooks/use-auth";
+import { User, Mail, Phone, MapPin, Calendar, LogOut, Loader2, Save, Edit2, CheckCircle, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import axiosInstance from '@/lib/axios';
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipcode?: string;
+  country?: string;
+  role?: string;
+  createdAt?: string;
+}
+
+export default function ProfilePage() {
+  const { user: sessionUser, isPending } = useAuth();
+  const session = sessionUser ? { user: sessionUser } : null;
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState({ type: 'success' as 'success' | 'error', message: '' });
+  const router = useRouter();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zipcode: '',
+    country: '',
+  });
+
+  // Fetch user profile
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      setLoadingProfile(true);
+      const response = await axiosInstance.get(`/users/${userId}`);
+      const profile = response.data;
+      setUserProfile(profile);
+      setFormData({
+        name: profile.name || '',
+        phone: profile.phone || '',
+        address: profile.address || '',
+        city: profile.city || '',
+        state: profile.state || '',
+        zipcode: profile.zipcode || '',
+        country: profile.country || '',
+      });
+    } catch (error: any) {
+      console.error('Error fetching user profile:', error);
+      // Set default values from session if API fails
+      if (session?.user) {
+        setUserProfile({
+          name: session.user.name || '',
+          email: session.user.email || '',
+          role: (session.user as any)?.role || 'user',
+        });
+        setFormData({
+          name: session.user.name || '',
+          phone: '',
+          address: '',
+          city: '',
+          state: '',
+          zipcode: '',
+          country: '',
+        });
+      }
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+  // Save profile updates
+  const handleSaveProfile = async () => {
+    if (!session?.user?.id) return;
+
+    try {
+      setIsSaving(true);
+      await axiosInstance.put(`/users/${session.user.id}`, formData);
+      
+      // Refresh profile data
+      await fetchUserProfile(session.user.id);
+      
+      setIsEditing(false);
+      setModalMessage({ type: 'success', message: 'Profile updated successfully!' });
+      setShowModal(true);
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      setModalMessage({ 
+        type: 'error', 
+        message: error.response?.data?.message || 'Failed to update profile. Please try again.' 
+      });
+      setShowModal(true);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    if (userProfile) {
+      setFormData({
+        name: userProfile.name || '',
+        phone: userProfile.phone || '',
+        address: userProfile.address || '',
+        city: userProfile.city || '',
+        state: userProfile.state || '',
+        zipcode: userProfile.zipcode || '',
+        country: userProfile.country || '',
+      });
+    }
+    setIsEditing(false);
+  };
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchUserProfile(session.user.id);
+    }
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/");
+    }
+  }, [isPending, session, router]);
+
+  if (isPending || loadingProfile) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 text-brand-blue animate-spin mx-auto mb-4" />
+          <p className="text-brand-black dark:text-white font-medium">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  const { user } = session;
+  const isAdmin = (user as any)?.role === 'admin';
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-black font-outfit transition-colors duration-300">
+      <Navbar />
+      <MarketTicker />
+      
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+        <div className="w-full">
+          <div className="mb-8 md:mb-12">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-brand-black dark:text-white tracking-tight mb-3">
+              {isAdmin ? 'Admin Profile' : 'My Profile'}
+            </h1>
+            <p className="text-brand-gray dark:text-gray-400 text-base md:text-lg">
+              {isAdmin ? 'System administration account' : 'Manage your personal information and preferences.'}
+            </p>
+          </div>
+          
+          <div className="bg-brand-light dark:bg-white/3 backdrop-blur-2xl border border-brand-border dark:border-white/10 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-lg dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]">
+            {/* Banner Gradient */}
+            <div className="h-28 md:h-40 bg-linear-to-r from-brand-blue/30 via-brand-blue/10 to-brand-red/20 relative">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,66,240,0.1),transparent)]"></div>
+            </div>
+
+            <div className="px-4 sm:px-6 md:px-8 pb-8 md:pb-12 -mt-12 md:-mt-16 relative z-10">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-4 md:gap-6 mb-8 md:mb-12">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl md:rounded-[2.5rem] bg-zinc-900 border-4 border-white dark:border-[#0a0a0a] flex items-center justify-center text-white text-3xl md:text-4xl font-black shadow-2xl shrink-0">
+                  <div className="w-full h-full bg-brand-blue flex items-center justify-center rounded-xl md:rounded-[calc(2.5rem-4px)]">
+                    {isAdmin ? 'A' : (formData.name ? formData.name.charAt(0).toUpperCase() : <User size={40} />)}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0 pb-1">
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-brand-black dark:text-white truncate">
+                    {isAdmin ? 'Administrator' : formData.name || 'User'}
+                  </h2>
+                  <p className="text-brand-blue font-semibold tracking-wide mt-1 truncate text-sm md:text-base">{user.email}</p>
+                  {userProfile?.role && (
+                    <span className="inline-block mt-2 px-3 py-1 bg-brand-blue/10 text-brand-blue text-xs font-bold rounded-full uppercase tracking-wider">
+                      {userProfile.role}
+                    </span>
+                  )}
+                </div>
+                {!isAdmin && (
+                  <button
+                    onClick={() => isEditing ? handleCancelEdit() : setIsEditing(true)}
+                    className="self-start sm:self-auto px-5 py-2.5 bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue border border-brand-blue/20 rounded-xl font-bold transition-all flex items-center gap-2 text-sm shrink-0"
+                  >
+                    {isEditing ? 'Cancel' : <><Edit2 size={15} />Edit Profile</>}
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-8">
+                {/* Personal Information */}
+                <div>
+                  <h3 className="text-xs font-black text-brand-gray dark:text-gray-500 uppercase tracking-[0.2em] pl-1 mb-6">
+                    Personal Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Name */}
+                    <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl flex items-center gap-4 group hover:bg-white/[0.07] transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform shrink-0">
+                        <User size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                          Full Name
+                        </p>
+                        {isEditing && !isAdmin ? (
+                          <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                            placeholder="Enter your name"
+                          />
+                        ) : (
+                          <p className="text-brand-black dark:text-white font-bold truncate">
+                            {formData.name || 'Not provided'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl flex items-center gap-4 group hover:bg-white/[0.07] transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform shrink-0">
+                        <Mail size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                          Email Address
+                        </p>
+                        <p className="text-brand-black dark:text-white font-bold truncate">{user.email}</p>
+                      </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl flex items-center gap-4 group hover:bg-white/[0.07] transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform shrink-0">
+                        <Phone size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                          Phone Number
+                        </p>
+                        {isEditing && !isAdmin ? (
+                          <input
+                            type="tel"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                            placeholder="Enter phone number"
+                          />
+                        ) : (
+                          <p className="text-brand-black dark:text-white font-bold truncate">
+                            {formData.phone || 'Not provided'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Joining Date */}
+                    <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl flex items-center gap-4 group hover:bg-white/[0.07] transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform shrink-0">
+                        <Calendar size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                          Member Since
+                        </p>
+                        <p className="text-brand-black dark:text-white font-bold truncate">
+                          {userProfile?.createdAt 
+                            ? new Date(userProfile.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                            : 'Recently joined'
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location Information */}
+                {!isAdmin && (
+                  <div>
+                    <h3 className="text-xs font-black text-brand-gray dark:text-gray-500 uppercase tracking-[0.2em] pl-1 mb-6">
+                      Location Details
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* Address */}
+                      <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl flex items-start gap-4 group hover:bg-white/[0.07] transition-all">
+                        <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform shrink-0">
+                          <MapPin size={20} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                            Street Address
+                          </p>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={formData.address}
+                              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                              className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                              placeholder="Enter your address"
+                            />
+                          ) : (
+                            <p className="text-brand-black dark:text-white font-bold">
+                              {formData.address || 'Not provided'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* City */}
+                        <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl">
+                          <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                            City
+                          </p>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={formData.city}
+                              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                              className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                              placeholder="Enter city"
+                            />
+                          ) : (
+                            <p className="text-brand-black dark:text-white font-bold">
+                              {formData.city || 'Not provided'}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* State */}
+                        <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl">
+                          <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                            State/Province
+                          </p>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={formData.state}
+                              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                              className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                              placeholder="Enter state"
+                            />
+                          ) : (
+                            <p className="text-brand-black dark:text-white font-bold">
+                              {formData.state || 'Not provided'}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Zipcode */}
+                        <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl">
+                          <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                            Zip/Postal Code
+                          </p>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={formData.zipcode}
+                              onChange={(e) => setFormData({ ...formData, zipcode: e.target.value })}
+                              className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                              placeholder="Enter zipcode"
+                            />
+                          ) : (
+                            <p className="text-brand-black dark:text-white font-bold">
+                              {formData.zipcode || 'Not provided'}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Country */}
+                        <div className="p-5 bg-white dark:bg-white/5 border border-brand-border dark:border-white/5 rounded-2xl">
+                          <p className="text-[10px] font-bold text-brand-gray dark:text-gray-500 uppercase tracking-widest leading-none mb-2">
+                            Country
+                          </p>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={formData.country}
+                              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                              className="w-full bg-transparent text-brand-black dark:text-white font-bold border-b border-brand-blue/30 focus:border-brand-blue outline-none pb-1"
+                              placeholder="Enter country"
+                            />
+                          ) : (
+                            <p className="text-brand-black dark:text-white font-bold">
+                              {formData.country || 'Not provided'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Save Button */}
+                {isEditing && !isAdmin && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isSaving}
+                      className="flex items-center gap-2 px-8 py-4 bg-brand-blue text-white rounded-2xl font-bold hover:bg-brand-blue/90 transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={18} />
+                          Save Changes
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Sign Out Section */}
+              <div className="mt-8 md:mt-12 pt-8 md:pt-10 border-t border-brand-border dark:border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-brand-black dark:text-white font-bold">Sign Out?</h4>
+                  <p className="text-brand-gray dark:text-gray-500 text-xs font-medium">Log out of your current session.</p>
+                </div>
+                <button 
+                  onClick={() => signOut().then(() => router.push('/'))}
+                  className="flex items-center gap-2 px-6 py-3 bg-brand-red/10 text-brand-red border border-brand-red/20 rounded-2xl font-bold hover:bg-brand-red hover:text-white transition-all shadow-lg active:scale-95 text-sm"
+                >
+                  <LogOut size={18} />
+                  Log Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Success/Error Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-zinc-900 rounded-4xl w-full max-w-md shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] dark:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-8">
+              <div className="flex flex-col items-center text-center">
+                {modalMessage.type === 'success' ? (
+                  <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center mb-6">
+                    <CheckCircle size={40} className="text-green-600 dark:text-green-400" />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center mb-6">
+                    <XCircle size={40} className="text-red-600 dark:text-red-400" />
+                  </div>
+                )}
+                
+                <h3 className="text-2xl font-black text-brand-black dark:text-white mb-3">
+                  {modalMessage.type === 'success' ? 'Success!' : 'Error'}
+                </h3>
+                
+                <p className="text-brand-gray dark:text-gray-400 mb-8 leading-relaxed">
+                  {modalMessage.message}
+                </p>
+                
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="w-full px-8 py-4 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Footer />
+    </div>
+  );
+}
