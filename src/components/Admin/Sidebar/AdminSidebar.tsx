@@ -7,7 +7,6 @@ import {
   LogOut, LayoutDashboard, Settings, Globe, Database, User, ChevronDown, ChevronRight, Mail, Send, MessageSquare
 } from 'lucide-react';
 import { signOut } from '@/hooks/use-auth';
-import axiosInstance from '@/lib/axios';
 
 export interface SubMenuItem {
   title: string;
@@ -70,15 +69,6 @@ export default function AdminSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    axiosInstance.get('/settings/general-info')
-      .then(res => {
-        if (res.data?.info?.logoUrl) setLogoUrl(res.data.info.logoUrl);
-      })
-      .catch(() => {});
-  }, []);
 
   const isMainItemActive = useCallback((href: string) => {
     if (href === '/admin/dashboard') return pathname === href;
@@ -124,15 +114,11 @@ export default function AdminSidebar() {
       {/* Logo Header */}
       <div className="flex px-4 py-5 border-b border-brand-border dark:border-white/10 items-center justify-center">
         <Link href="/admin/dashboard" className="flex items-center justify-center w-full rounded-lg p-2 shadow-sm hover:opacity-90 transition-opacity">
-          {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="h-10 w-auto object-contain" />
-          ) : (
-            <h1 className="text-2xl font-black tracking-tighter flex items-center">
-              <span className="text-brand-blue">Up</span>
-              <span className="text-brand-black dark:text-white">Down</span>
-              <span className="text-brand-red">Live</span>
-            </h1>
-          )}
+          <h1 className="text-2xl font-black tracking-tighter flex items-center">
+            <span className="text-brand-blue">Up</span>
+            <span className="text-brand-black dark:text-white">Down</span>
+            <span className="text-brand-red">Live</span>
+          </h1>
         </Link>
       </div>
 
