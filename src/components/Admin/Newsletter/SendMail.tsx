@@ -51,7 +51,7 @@ export default function SendMail() {
     setError('');
     setSuccess(false);
     try {
-      await axiosInstance.post('/newsletter/send-bulk-email', { ...formData, images });
+      await axiosInstance.post('/newsletter/send-bulk-email', { ...formData, images }, { timeout: 300000 });
       setSuccess(true);
       setFormData({ subject: '', title: '', message: '' });
       setImages([]);

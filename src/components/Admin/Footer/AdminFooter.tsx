@@ -10,9 +10,9 @@ export default function AdminFooter() {
           &copy; {currentYear} UpDownLive. All rights reserved.
         </p>
         <div className="flex items-center gap-6 text-sm font-bold text-brand-gray dark:text-gray-400">
-          <a href="#" className="hover:text-brand-blue transition-colors">Documentation</a>
+          {/* <a href="#" className="hover:text-brand-blue transition-colors">Documentation</a>
           <a href="#" className="hover:text-brand-blue transition-colors">Support Portal</a>
-          <a href="#" className="hover:text-brand-blue transition-colors">System Status</a>
+          <a href="#" className="hover:text-brand-blue transition-colors">System Status</a> */}
         </div>
       </div>
     </footer>

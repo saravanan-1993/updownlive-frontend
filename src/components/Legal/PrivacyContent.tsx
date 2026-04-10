@@ -1,7 +1,35 @@
-import React from 'react';
+"use client";
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
+import axiosInstance from '@/lib/axios';
 
 export default function PrivacyContent() {
+  const [content, setContent] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axiosInstance.get('/settings/legal/privacy')
+      .then(res => { if (res.data?.content) setContent(res.data.content); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-blue" />
+      </div>
+    );
+  }
+
+  if (content) {
+    return (
+      <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
+    );
+  }
+
+  // Fallback to default static content
   return (
     <div className="prose prose-gray dark:prose-invert max-w-none">
       <section className="mb-8">

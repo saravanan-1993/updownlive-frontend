@@ -61,7 +61,8 @@ export const navigation: NavigationItem[] = [
     subItems: [
       { title: 'General Information', href: '/admin/dashboard/settings/general' },
       { title: 'Social Media', href: '/admin/dashboard/settings/social-media' },
-      { title: 'SEO Settings', href: '/admin/dashboard/settings/seo' }
+      { title: 'SEO Settings', href: '/admin/dashboard/settings/seo' },
+      { title: 'Legal Pages', href: '/admin/dashboard/settings/legal' }
     ]
   },
 ];
