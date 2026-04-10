@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import axiosInstance from '@/lib/axios';
 import { Send, Mail, Type, MessageSquare, ImagePlus, X, Loader2, Eye } from 'lucide-react';
 import { Card } from '@/components/UI/Card';
+import TiptapEditor from './TiptapEditor';
 
 export default function SendMail() {
   const [formData, setFormData] = useState({ subject: '', title: '', message: '' });
@@ -40,7 +41,7 @@ export default function SendMail() {
 
   const removeImage = (url: string) => setImages(prev => prev.filter(u => u !== url));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData.subject || !formData.title || !formData.message) {
       setError('All fields are required');
@@ -78,7 +79,7 @@ export default function SendMail() {
         </div>
         <div style="padding:32px 30px;">
           ${imagesHtml}
-          <p style="white-space:pre-wrap;font-size:15px;color:#374151;line-height:1.8;margin:0;">${formData.message || 'Your message will appear here...'}</p>
+          <div style="font-size:15px;color:#374151;line-height:1.8;">${formData.message || '<p style="color:#9ca3af;">Your message will appear here...</p>'}</div>
         </div>
         <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:20px 30px;text-align:center;font-size:12px;color:#6b7280;">
           <p style="margin:0 0 6px;">You're receiving this because you subscribed to UpDownLive newsletter.</p>
@@ -124,11 +125,14 @@ export default function SendMail() {
                 <label className="flex items-center gap-2 text-sm font-semibold text-brand-black dark:text-white mb-2">
                   <MessageSquare className="w-4 h-4" /> Message
                 </label>
-                <textarea name="message" value={formData.message} onChange={handleChange}
-                  placeholder="Enter your message content..." rows={8} maxLength={5000}
-                  className="w-full px-4 py-3 rounded-lg border border-brand-border dark:border-white/10 bg-white dark:bg-white/5 text-brand-black dark:text-white placeholder-brand-gray dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue transition-all resize-none"
-                  required />
-                <p className="text-xs text-brand-gray dark:text-gray-500 mt-1">{formData.message.length}/5000</p>
+                <TiptapEditor
+                  value={formData.message}
+                  onChange={html => {
+                    setFormData(prev => ({ ...prev, message: html }));
+                    setError('');
+                    setSuccess(false);
+                  }}
+                />
               </div>
 
               <div>
