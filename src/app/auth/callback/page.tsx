@@ -15,6 +15,9 @@ export default function AuthCallbackPage() {
     if (token) {
       // Store token for cross-domain Bearer auth
       localStorage.setItem('userToken', token);
+      if (role === 'admin') {
+        localStorage.setItem('adminToken', token);
+      }
       invalidateSession();
       window.location.href = role === 'admin' ? '/admin/dashboard' : '/';
     } else {

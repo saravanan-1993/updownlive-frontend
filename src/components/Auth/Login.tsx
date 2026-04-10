@@ -51,6 +51,9 @@ export default function LoginPage() {
       // Store token for cross-domain auth (production)
       if (data.token) {
         localStorage.setItem('userToken', data.token);
+        if (data.role === 'admin') {
+          localStorage.setItem('adminToken', data.token);
+        }
       }
       invalidateSession();
       window.location.href = data.role === "admin" ? "/admin/dashboard" : "/";
