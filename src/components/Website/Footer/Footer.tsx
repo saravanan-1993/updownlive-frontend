@@ -38,8 +38,7 @@ export default function Footer() {
       setEmail('');
       setAgreed(false);
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || 'Failed to subscribe. Please try again.';
-      // Handle "already subscribed" case more gracefully
+      const errorMsg = error.message || 'Failed to subscribe. Please try again.';
       if (errorMsg.toLowerCase().includes('already subscribed')) {
         setMessage('This email is already subscribed to our newsletter!');
       } else {
