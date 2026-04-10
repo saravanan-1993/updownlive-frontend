@@ -38,14 +38,20 @@ export default function Footer() {
       setEmail('');
       setAgreed(false);
     } catch (error: any) {
-      setMessage(error.response?.data?.message || 'Failed to subscribe. Please try again.');
+      const errorMsg = error.response?.data?.message || 'Failed to subscribe. Please try again.';
+      // Handle "already subscribed" case more gracefully
+      if (errorMsg.toLowerCase().includes('already subscribed')) {
+        setMessage('This email is already subscribed to our newsletter!');
+      } else {
+        setMessage(errorMsg);
+      }
     } finally {
       setLoading(false);
       setTimeout(() => setMessage(''), 10000);
     }
   };
 
-  const isSuccess = message.includes('Success') || message.includes('subscribed');
+  const isSuccess = message.includes('Success') || message.includes('subscribed') || message.includes('already subscribed');
 
   return (
     <footer className="bg-white dark:bg-black border-t border-gray-200 dark:border-gray-900 pt-10 md:pt-16 mt-10 md:mt-16 font-sans text-black dark:text-white">
