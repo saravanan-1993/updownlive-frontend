@@ -55,15 +55,16 @@ export default function Enquiries() {
     try {
       await axiosInstance.patch(`/enquiries/${selectedEnquiry._id}/notice`, { notice: noticeText });
       
-      setEnquiries(enquiries.map(enq => 
+      setEnquiries(enquiries.map(enq =>
         enq._id === selectedEnquiry._id ? { ...enq, notice: noticeText } : enq
       ));
-      setSelectedEnquiry({ ...selectedEnquiry, notice: noticeText });
-      
+
       toast({
         title: 'Notice Saved',
         description: 'Admin notice has been updated successfully.',
       });
+
+      setSelectedEnquiry(null);
     } catch (err) {
       console.error('Failed to save notice:', err);
       toast({
