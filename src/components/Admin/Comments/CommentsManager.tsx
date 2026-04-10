@@ -147,7 +147,7 @@ export default function CommentsManager() {
                         rel="noopener noreferrer"
                         className="text-brand-blue hover:underline shrink-0 flex items-center gap-0.5"
                       >
-                        View <ExternalLink size={11} />
+                        Vieww <ExternalLink size={11} />
                       </a>
                     </div>
                   </div>
