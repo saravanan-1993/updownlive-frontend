@@ -7,6 +7,7 @@ import {
   LogOut, LayoutDashboard, Settings, Globe, Database, User, ChevronDown, ChevronRight, Mail, Send, MessageSquare
 } from 'lucide-react';
 import { signOut } from '@/hooks/use-auth';
+import { useLogo } from '@/hooks/use-logo';
 
 export interface SubMenuItem {
   title: string;
@@ -69,6 +70,7 @@ export default function AdminSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const logoUrl = useLogo();
 
   const isMainItemActive = useCallback((href: string) => {
     if (href === '/admin/dashboard') return pathname === href;
@@ -113,7 +115,10 @@ export default function AdminSidebar() {
     <div className="flex h-full w-64 shrink-0 flex-col font-outfit bg-white dark:bg-brand-black border-r border-brand-border dark:border-white/10 shadow-sm z-40 text-brand-black dark:text-white transition-colors duration-300">
       {/* Logo Header */}
       <div className="flex px-4 py-5 border-b border-brand-border dark:border-white/10 items-center justify-center">
-        <Link href="/admin/dashboard" className="flex items-center justify-center w-full rounded-lg p-2 shadow-sm hover:opacity-90 transition-opacity">
+        <Link href="/admin/dashboard" className="flex items-center justify-center w-full rounded-lg p-2 shadow-sm hover:opacity-90 transition-opacity gap-2">
+          {logoUrl && (
+            <img src={logoUrl} alt="UpDownLive" className="h-9 w-auto object-contain" />
+          )}
           <h1 className="text-2xl font-black tracking-tighter flex items-center">
             <span className="text-brand-blue">Up</span>
             <span className="text-brand-black dark:text-white">Down</span>

@@ -6,6 +6,7 @@ import { Menu, X, User, LogOut, LayoutDashboard, Settings } from 'lucide-react';
 import { useAuth, signOut } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useLogo } from '@/hooks/use-logo';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function Navbar() {
   const { user, isPending } = useAuth();
   const isAdmin = user?.role === 'admin';
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const logoUrl = useLogo();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -38,7 +40,10 @@ export default function Navbar() {
       {/* Single Row: Logo, Navigation, Actions */}
       <div className="max-w-[1420px] mx-auto px-6 flex justify-between items-center h-20 gap-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0">
+        <Link href="/" className="flex items-center shrink-0 gap-2">
+          {logoUrl && (
+            <img src={logoUrl} alt="UpDownLive" className="h-10 w-auto object-contain" />
+          )}
           <h1 className="text-3xl font-extrabold tracking-tight flex items-center">
             <span className="text-brand-blue">Up</span>
             <span className="text-brand-black dark:text-white">Down</span>

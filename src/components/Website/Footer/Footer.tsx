@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import axiosInstance from '@/lib/axios';
 import { Twitter, Youtube, Facebook, Linkedin, Instagram, Send } from 'lucide-react';
+import { useLogo } from '@/hooks/use-logo';
 
 export default function Footer() {
   const [socialLinks, setSocialLinks] = useState({
@@ -12,6 +13,7 @@ export default function Footer() {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const logoUrl = useLogo();
 
   useEffect(() => {
     axiosInstance.get('/settings/social-media')
@@ -61,9 +63,14 @@ export default function Footer() {
 
           {/* Nav links */}
           <div className="xl:col-span-4">
-            <h3 className="text-2xl md:text-3xl font-extrabold mb-5 flex items-center gap-1">
-              <span className="text-brand-blue">Up</span><span className="text-black dark:text-white">Down</span><span className="text-brand-red">Live</span>
-            </h3>
+            <div className="flex items-center gap-2 mb-5">
+              {logoUrl && (
+                <img src={logoUrl} alt="UpDownLive" className="h-9 w-auto object-contain" />
+              )}
+              <h3 className="text-2xl md:text-3xl font-extrabold flex items-center gap-1">
+                <span className="text-brand-blue">Up</span><span className="text-black dark:text-white">Down</span><span className="text-brand-red">Live</span>
+              </h3>
+            </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-3">
               {[
                 ['/', 'Home'], ['/live-feed', 'Live Feed'], ['/economic-calendar', 'Economic Calendar'],
