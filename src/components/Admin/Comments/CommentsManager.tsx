@@ -40,7 +40,10 @@ export default function CommentsManager() {
 
   const fetchComments = async () => {
     try {
-      const res = await fetch('/api/comments/all');
+      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const res = await fetch('/api/comments/all', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const data = await res.json();
       if (data.success) {
         setComments(data.comments);
@@ -57,7 +60,11 @@ export default function CommentsManager() {
     if (!confirm('Delete this comment?')) return;
     setDeleting(id);
     try {
-      const res = await fetch(`/api/comments/${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const res = await fetch(`/api/comments/${id}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const data = await res.json();
       if (data.success) {
         setComments(prev => prev.filter(c => c._id !== id));

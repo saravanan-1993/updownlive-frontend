@@ -9,7 +9,10 @@ const BACKEND_URL = (
 
 export async function GET(request: NextRequest) {
   const res = await fetch(`${BACKEND_URL}/api/comments/all`, {
-    headers: { cookie: request.headers.get('cookie') || '' },
+    headers: {
+      cookie: request.headers.get('cookie') || '',
+      ...(request.headers.get('authorization') ? { authorization: request.headers.get('authorization')! } : {}),
+    },
     cache: 'no-store',
   });
   const data = await res.json();

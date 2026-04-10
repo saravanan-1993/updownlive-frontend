@@ -11,7 +11,10 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const { id } = await params;
   const res = await fetch(`${BACKEND_URL}/api/comments/${id}`, {
     method: 'DELETE',
-    headers: { cookie: request.headers.get('cookie') || '' },
+    headers: {
+      cookie: request.headers.get('cookie') || '',
+      ...(request.headers.get('authorization') ? { authorization: request.headers.get('authorization')! } : {}),
+    },
     cache: 'no-store',
   });
   const data = await res.json();
