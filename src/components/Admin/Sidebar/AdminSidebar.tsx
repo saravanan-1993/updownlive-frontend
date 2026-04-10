@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import {
+import { 
   LogOut, LayoutDashboard, Settings, Globe, Database, User, ChevronDown, ChevronRight, Mail, Send, MessageSquare
 } from 'lucide-react';
 import { signOut } from '@/hooks/use-auth';
