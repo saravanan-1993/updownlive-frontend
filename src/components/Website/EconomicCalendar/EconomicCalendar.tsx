@@ -1,38 +1,47 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Info, Calendar, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const EconomicCalendarWidget = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Clear any previous widget content
+    containerRef.current.innerHTML = '<div id="tradingview_economic_calendar"></div>';
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      colorTheme: "light",
+      isTransparent: false,
+      width: "100%",
+      height: "600",
+      locale: "en",
+      importanceFilter: "-1,0,1",
+    });
+
+    containerRef.current.appendChild(script);
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+    };
+  }, []);
+
   return (
     <div className="w-full flex flex-col items-center">
-      <div className="w-full overflow-x-auto">
-        <iframe 
-          src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&category=_employment,_economicActivity,_inflation,_credit,_centralBanks,_confidenceIndex,_balance,_Bonds&importance=3&features=datepicker,timezone&countries=95,86,29,25,54,114,145,47,34,8,174,163,32,70,6,232,27,37,122,15,78,113,107,55,24,121,59,89,72,71,22,17,74,51,39,93,106,14,48,66,33,23,10,119,35,92,102,57,94,204,97,68,96,103,111,42,109,188,7,139,247,105,82,172,21,43,20,60,87,44,193,148,125,45,53,38,170,100,56,80,52,238,36,90,112,110,11,26,162,9,12,46,85,41,202,63,123,61,143,4,5,180,168,138,178,84,75&calType=week&timeZone=8&lang=1" 
-          width="100%" 
-          height="490"
-          frameBorder="0"
-          allowTransparency={true}
-          marginWidth={0}
-          marginHeight={0}
-          className="min-w-[320px] w-full"
-          style={{ minHeight: '490px' }}
-        />
-      </div>
-      <div className="w-full mt-3 text-center px-2">
-        <span className="text-[11px] text-gray-600 dark:text-gray-400">
-          Real Time Economic Calendar provided by{' '}
-          <a 
-            href="https://www.investing.com/" 
-            rel="nofollow" 
-            target="_blank" 
-            className="text-brand-blue font-semibold hover:underline"
-          >
-            Investing.com
-          </a>
-        </span>
-      </div>
+      <div
+        className="tradingview-widget-container w-full min-w-[320px]"
+        ref={containerRef}
+        style={{ minHeight: "600px" }}
+      />
     </div>
   );
 };
@@ -63,7 +72,7 @@ export default function EconomicCalendar() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-brand-black dark:text-white leading-tight">Live Market Data</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Powered by Investing.com</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Powered by TradingView</span>
             </div>
           </div>
           
