@@ -11,7 +11,7 @@ const POPULAR_SYMBOLS = [
   { symbol: "NYSE:NVDA", name: "NVIDIA Corp.", category: "Tech" },
   { symbol: "BINANCE:BTCUSDT", name: "Bitcoin", category: "Crypto" },
   { symbol: "FX:EURUSD", name: "EUR/USD", category: "Forex" },
-  { symbol: "COMEX:GC1!", name: "Gold Futures", category: "Commodity" },
+  { symbol: "TVC:GOLD", name: "Gold Futures", category: "Commodity" },
   { symbol: "NASDAQ:QQQ", name: "NASDAQ 100", category: "Index" }
 ];
 

@@ -34,7 +34,7 @@ const chartTypes: ChartType[] = [
     title: "Futures Chart",
     description: "Tracks future contracts like Gold Futures, Crude Oil Futures.",
     icon: <TrendingUp size={24} />,
-    symbol: "COMEX:GC1!",
+    symbol: "TVC:GOLD",
     color: "yellow",
   },
   {
@@ -42,7 +42,7 @@ const chartTypes: ChartType[] = [
     title: "Gold Charts",
     description: "Live gold, silver, and precious metals spot prices and futures.",
     icon: <Coins size={24} />,
-    symbol: "COMEX:GC1!",
+    symbol: "TVC:GOLD",
     color: "orange",
   },
   {
@@ -78,15 +78,15 @@ const symbolOptions: Record<string, { symbol: string; name: string }[]> = {
     { symbol: "FX:NZDUSD", name: "NZD/USD" },
   ],
   futures: [
-    { symbol: "COMEX:GC1!", name: "Gold" },
-    { symbol: "NYMEX:CL1!", name: "Crude Oil" },
-    { symbol: "CBOT:ZW1!", name: "Wheat" },
-    { symbol: "NYMEX:NG1!", name: "Nat. Gas" },
+    { symbol: "TVC:GOLD", name: "Gold" },
+    { symbol: "TVC:USOIL", name: "Crude Oil" },
+    { symbol: "TVC:WHEAT", name: "Wheat" },
+    { symbol: "TVC:NATGAS", name: "Nat. Gas" },
   ],
   gold: [
-    { symbol: "COMEX:GC1!", name: "Gold Futures" },
-    { symbol: "COMEX:SI1!", name: "Silver Futures" },
-    { symbol: "COMEX:PL1!", name: "Platinum" },
+    { symbol: "TVC:GOLD", name: "Gold" },
+    { symbol: "TVC:SILVER", name: "Silver" },
+    { symbol: "TVC:PLATINUM", name: "Platinum" },
     { symbol: "TVC:GOLD", name: "Gold Spot" },
   ],
   stocks: [
