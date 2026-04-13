@@ -1,50 +1,62 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, memo } from "react";
 import { Info, Calendar, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const EconomicCalendarWidget = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+const EconomicCalendarWidget = memo(() => {
+  const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!container.current) return;
 
-    // Clear any previous widget content
-    containerRef.current.innerHTML = '<div id="tradingview_economic_calendar"></div>';
+    // Clear previous widget
+    container.current.innerHTML = "";
 
     const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
     script.async = true;
-    script.innerHTML = JSON.stringify({
-      colorTheme: "light",
-      isTransparent: false,
-      width: "100%",
-      height: "600",
-      locale: "en",
-      importanceFilter: "-1,0,1",
-    });
+    script.type = "text/javascript";
+    script.setAttribute("data-type", "calendar-widget");
+    script.src = "https://www.tradays.com/c/js/widgets/calendar/widget.js?v=15";
 
-    containerRef.current.appendChild(script);
+    // Configuration with expanded settings
+    const config = {
+      width: "100%",
+      height: "800",
+      mode: "1",
+      fw: "html",
+      countries: "us,eu,gb,jp,au,ca,nz,ch,se,no",
+      importance: "1,2,3",
+      eventTypes: "1,2,3,4,5,6",
+      showall: "1"
+    };
+
+    script.textContent = JSON.stringify(config);
+    container.current.appendChild(script);
 
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+      if (container.current) {
+        container.current.innerHTML = "";
       }
     };
   }, []);
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div
-        className="tradingview-widget-container w-full min-w-[320px]"
-        ref={containerRef}
-        style={{ minHeight: "600px" }}
-      />
+    <div className="w-full h-full">
+      <div id="economicCalendarWidget" ref={container} className="w-full h-full" />
+      <div className="ecw-copyright mt-3 text-center py-3 border-t border-gray-200 dark:border-zinc-800">
+        <a
+          href="https://www.mql5.com/?utm_source=calendar.widget&utm_medium=link&utm_term=economic.calendar&utm_content=visit.mql5.calendar&utm_campaign=202.calendar.widget"
+          rel="noopener nofollow"
+          target="_blank"
+          className="text-brand-blue hover:underline text-xs"
+        >
+          MQL5 Algo Trading Community
+        </a>
+      </div>
     </div>
   );
-};
+});
 
 export default function EconomicCalendar() {
   return (
@@ -72,7 +84,7 @@ export default function EconomicCalendar() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-brand-black dark:text-white leading-tight">Live Market Data</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Powered by TradingView</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Powered by MQL5</span>
             </div>
           </div>
           
@@ -99,7 +111,9 @@ export default function EconomicCalendar() {
           </div>
         </div>
 
-        <EconomicCalendarWidget />
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm overflow-hidden min-h-[800px]">
+          <EconomicCalendarWidget />
+        </div>
       </div>
     </div>
   );
